@@ -34,8 +34,11 @@ const createTables = async () => {
     await client.query(`
     CREATE TABLE users(
       id SERIAL UNIQUE NOT NULL,
-      name VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL
+      username VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      location VARCHAR(255) NOT NULL,
+      active BOOLEAN DEFAULT true
       );
       `)
     console.log('finished creating tables')
@@ -47,9 +50,9 @@ const createTables = async () => {
 const createInitialUsers = async () => {
   try {
     console.log('starting to create users...')
-    const albert = await createUser({ name: 'albert', password: 'bertie99' });
-    const sandra = await createUser({ name: 'sandra', password: '2sandy4me' });
-    const glamgal = await createUser({ name: 'glamgal', password: 'soglam' });
+    const albert = await createUser({ username: 'albert', password: 'bertie99', name: 'Albert', location: 'NYC' });
+    const sandra = await createUser({ username: 'sandra', password: '2sandy4me', name: 'Sandra', location: 'LA' });
+    const glamgal = await createUser({ username: 'glamgal', password: 'soglam', name: 'Tanya', location: 'Sicily' });
     console.log('finished creating users!')
   } catch (error) {
     console.error('error creating users!')
