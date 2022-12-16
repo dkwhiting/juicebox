@@ -96,7 +96,7 @@ const createInitialPosts = async () => {
     await createPost({
       authorId: glamgal.id,
       title: "DO YOU KNOW THESE GAYS?",
-      content: "HELP I THINK THESE GAYS ARE GOING TO KILL ME! xoxox"
+      content: "PLEASE! THESE GAYS! THEY'RE TRYING TO MURDER ME"
     })
   } catch (error) {
     console.log('error creating inital posts', error)
@@ -181,8 +181,11 @@ const testDB = async () => {
     // await getAllTags()
     await createPostTag(1, 1)
     await createPostTag(1, 2)
+    await createPostTag(1, 2)
+    await createPostTag(3, 2)
     // await getPostsById(1)
-    await getPostsByUser(1)
+    console.log(await getPostsByUser(3))
+    console.log(await getAllPosts())
 
     console.log("Finished database tests!");
   } catch (error) {

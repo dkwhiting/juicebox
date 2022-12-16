@@ -15,10 +15,16 @@ const getAllUsers = async () => {
 
 const getAllPosts = async () => {
   try {
-    const { rows } = await client.query(`
-    SELECT * FROM posts;
+    const { rows: postIds } = await client.query(`
+    SELECT id 
+    FROM posts;
     `)
-    return rows
+
+    const posts = await Promise.all(postIds.map(post => {
+      return getPostsById(post.id)
+    }))
+
+    return posts
   } catch (error) {
     console.error('error getting posts', error)
   }
@@ -30,7 +36,6 @@ const getAllTags = async () => {
     const { rows: tags } = await client.query(`
     SELECT * FROM tags
     `)
-    console.log(tags)
     console.log('finished getting all tags!')
     return tags
   } catch (error) {
@@ -46,8 +51,8 @@ const getPostsByUser = async (userId) => {
     WHERE "authorId" = $1
     ;`, [userId])
 
-    const posts = await Promise.all(postIds.map(id => {
-      return getPostsById(id.id)
+    const posts = await Promise.all(postIds.map(post => {
+      return getPostsById(post.id)
     }))
     return posts
 
