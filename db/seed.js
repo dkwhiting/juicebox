@@ -2,9 +2,9 @@ const {
   client,
   getAllUsers,
   getAllPosts,
-  getAllTags,
   getPostsByUser,
   getPostById,
+  getPostsByTagName,
   getUserById,
   createUser,
   createPost,
@@ -97,8 +97,8 @@ const createInitialPosts = async () => {
     })
     await createPost({
       authorId: glamgal.id,
-      title: "DO YOU KNOW THESE GAYS?",
-      content: "PLEASE! THESE GAYS! THEY'RE TRYING TO MURDER ME",
+      title: "More wine",
+      content: "HELP! I am running out of wine. Please bring more",
       tags: ["#helpme", '#morechardonnay']
     })
   } catch (error) {
@@ -122,57 +122,65 @@ const rebuildDB = async () => {
 
 const testDB = async () => {
   try {
-    console.log("Starting to test database...");
+    console.log("starting database tests...");
+    const users = await getAllUsers(); // DO NOT COMMENT OUT THESE ROWS
+    const posts = await getAllPosts(); // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-    // console.log("Calling getAllUsers");
-    // const users = await getAllUsers();
-    // console.log("Result:", users);
 
-    // console.log("Calling getPostsByUser")
+    //// <-- UNCOMMENT TESTS 1 AT A TIME --> ////
+
+    //// <-- Tests getPostsByUser --> ////
+
+    // console.log("TESTING: Calling getPostsByUser")
     // const postsByUser = await getPostsByUser(users[0].id)
     // console.log("Result:", postsByUser)
 
 
-    // console.log("Calling updateUser on users[0]");
-    // const updateUserResult = await updateUser(users[0].id, {
+
+    //// <-- Tests updateUser --> ////
+
+    // console.log("TESTING: Calling updateUser on users[0]");
+    // const originalUserResult = await getUserById(users[0].id)
+    // const updatedUserResult = await updateUser(users[0].id, {
     //   name: "Newname Sogood",
-    //   location: "Lesterville, KY"
+    //   location: "Lesterville, KY",
+    //   active: false
     // });
-    // console.log("Result:", updateUserResult);
+    // delete originalUserResult.posts
+    // console.log("Original:", originalUserResult);
+    // console.log("Result:", updatedUserResult);
 
-    // console.log("Calling ")
 
-    // console.log("Calling getAllPosts");
-    const posts = await getAllPosts();
-    // console.log("Result:", posts);
 
-    // console.log("Calling updatePost on posts[0]");
+    //// <-- Tests updatePost --> ////
+
+    // console.log("TESTING: Calling updatePost on posts[0]");
+    // const originalPostResult = await getPostById(posts[0].id)
     // const updatePostResult = await updatePost(posts[0].id, {
     //   title: "New Title",
-    //   content: "Updated Content"
+    //   content: "Updated Content",
+    //   tags: ['#anewtag', '#isthisworking?']
     // });
+    // console.log("Original:", originalPostResult);
     // console.log("Result:", updatePostResult);
 
-    // console.log("Calling getUserById with 1");
+
+
+    //// <-- Tests getUserById --> ////
+
+    // console.log("TESTING: Calling getUserById with 1");
     // const albert = await getUserById(1);
     // console.log("Result:", albert);
-
-    // await getAllTags()
-    await createPostTag(1, 1)
-    await createPostTag(1, 2)
-    await createPostTag(1, 2)
-    await createPostTag(3, 2)
-
-
-    // await getPostById(1)
+    // console.log("Nested tags from albert.posts[0]:", albert.posts[0].tags)
 
 
 
-    console.log("Calling updatePost on posts[1], only updating tags");
-    const updatePostTagsResult = await updatePost(posts[1].id, {
-      tags: ["#youcandoanything", "#redfish", "#bluefish"]
-    });
-    console.log("Result:", updatePostTagsResult);
+    //// <-- Tests getPostsByTagName --> ////
+
+    // console.log("TESTING: Calling getPostsByTagName")
+    // const getPostsByTagNameResult = await getPostsByTagName('#happy')
+    // console.log("Result:", getPostsByTagNameResult)
+
 
     console.log("Finished database tests!");
   } catch (error) {

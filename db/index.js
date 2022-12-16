@@ -30,19 +30,6 @@ const getAllPosts = async () => {
   }
 }
 
-const getAllTags = async () => {
-  try {
-    console.log('starting to get all tags...')
-    const { rows: tags } = await client.query(`
-    SELECT * FROM tags
-    `)
-    console.log('finished getting all tags!')
-    return tags
-  } catch (error) {
-
-  }
-}
-
 const getPostsByUser = async (userId) => {
   try {
     const { rows: postIds } = await client.query(`
@@ -104,6 +91,22 @@ const getPostById = async (postId) => {
   }
 }
 
+const getPostsByTagName = async (tagName) => {
+  try {
+    const { rows: postIds } = await client.query(`
+    SELECT posts.id FROM posts
+    JOIN post_tags
+      ON posts.id = post_tags."post_id"
+    JOIN tags
+      ON post_tags."tag_id" = tags.id
+    WHERE tags.name = $1
+    `, [tagName])
+    return await Promise.all(postIds.map(post => getPostById(post.id)))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const createUser = async ({
   username,
   password,
@@ -132,15 +135,12 @@ const createPost = async ({
   tags = []
 }) => {
   try {
-    console.log('starting to create post')
     const { rows: [post] } = await client.query(`
     INSERT INTO posts ("authorId", title, content)
     VALUES ($1, $2, $3)
     RETURNING *
     `, [authorId, title, content])
-
     const tagList = await createTags(tags)
-    console.log('finished creating post')
     return await addTagsToPost(post.id, tagList)
   } catch (error) {
     console.error('error creating post', error)
@@ -178,13 +178,11 @@ const createTags = async (tagList) => {
 const createPostTag = async (postId, tagId) => {
 
   try {
-    console.log('starting to create post tag...')
     await client.query(`
       INSERT INTO post_tags("post_id", "tag_id")
       VALUES ($1, $2)
       ON CONFLICT ("post_id", "tag_id") DO NOTHING
     `, [postId, tagId])
-    console.log('finished creating post tag!')
   } catch (error) {
     console.log('error creating post tag', error)
   }
@@ -193,15 +191,12 @@ const createPostTag = async (postId, tagId) => {
 const addTagsToPost = async (postId, tagList) => {
   if (!postId) return;
   if (tagList.length === 0) return;
-  console.log('starting adding tags to post...')
   try {
     const createPostTagPromises = tagList.map(tag => {
       createPostTag(postId, tag.id)
     })
-
     await Promise.all(createPostTagPromises)
     return await getPostById(postId)
-
   } catch (error) {
     console.log('error adding tags to post', error)
   }
@@ -217,7 +212,6 @@ const updateUser = async (id, fields = {}) => {
   if (setString.length === 0) {
     return;
   }
-
   for (let key of keys) {
     if (!['username',
       'password',
@@ -226,7 +220,6 @@ const updateUser = async (id, fields = {}) => {
       'active'].includes(key))
       return;
   }
-
   try {
     const { rows: [user] } = await client.query(`
     UPDATE users
@@ -234,7 +227,6 @@ const updateUser = async (id, fields = {}) => {
     WHERE id = ${id}
     RETURNING *
     `, Object.values(fields))
-    console.log('finished updating user')
     return user
   } catch (error) {
     console.error('error updating user', error)
@@ -295,9 +287,9 @@ module.exports = {
   client,
   getAllUsers,
   getAllPosts,
-  getAllTags,
   getPostsByUser,
   getPostById,
+  getPostsByTagName,
   getUserById,
   createUser,
   createPost,
