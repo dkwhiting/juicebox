@@ -15,18 +15,25 @@ const getAllUsers = async () => {
 
 const getAllPosts = async () => {
   try {
-    const { rows: postIds } = await client.query(`
-    SELECT id 
-    FROM posts;
+    const { rows } = await client.query(`
+    SELECT * FROM posts;
     `)
-
-    const posts = await Promise.all(postIds.map(post => {
-      return getPostById(post.id)
-    }))
-
-    return posts
+    return rows
   } catch (error) {
     console.error('error getting posts', error)
+  }
+}
+
+const getAllTags = async () => {
+  try {
+    console.log('starting to get all tags...')
+    const { rows: tags } = await client.query(`
+    SELECT * FROM tags
+    `)
+    console.log('finished getting all tags!')
+    return tags
+  } catch (error) {
+
   }
 }
 
@@ -38,8 +45,8 @@ const getPostsByUser = async (userId) => {
     WHERE "authorId" = $1
     ;`, [userId])
 
-    const posts = await Promise.all(postIds.map(post => {
-      return getPostById(post.id)
+    const posts = await Promise.all(postIds.map(id => {
+      return getPostsById(id.id)
     }))
     return posts
 
@@ -62,7 +69,7 @@ const getUserById = async (userId) => {
   }
 }
 
-const getPostById = async (postId) => {
+const getPostsById = async (postId) => {
   try {
     const { rows: [post] } = await client.query(`
     SELECT * FROM posts
@@ -77,9 +84,9 @@ const getPostById = async (postId) => {
     `, [postId])
 
     const { rows: [author] } = await client.query(`
-    SELECT id, username, name, location
-    FROM users
-    WHERE id = $1
+      SELECT id, username, name, location
+      FROM users
+      WHERE id = $1
     `, [post.authorId])
 
     post.author = author
@@ -88,22 +95,6 @@ const getPostById = async (postId) => {
     return post;
   } catch (error) {
     console.error('error getting posts by id', error)
-  }
-}
-
-const getPostsByTagName = async (tagName) => {
-  try {
-    const { rows: postIds } = await client.query(`
-    SELECT posts.id FROM posts
-    JOIN post_tags
-      ON posts.id = post_tags."post_id"
-    JOIN tags
-      ON post_tags."tag_id" = tags.id
-    WHERE tags.name = $1
-    `, [tagName])
-    return await Promise.all(postIds.map(post => getPostById(post.id)))
-  } catch (error) {
-    console.error(error)
   }
 }
 
@@ -135,11 +126,13 @@ const createPost = async ({
   tags = []
 }) => {
   try {
+    console.log('starting to create post')
     const { rows: [post] } = await client.query(`
     INSERT INTO posts ("authorId", title, content)
     VALUES ($1, $2, $3)
     RETURNING *
     `, [authorId, title, content])
+    console.log('finished creating post')
     const tagList = await createTags(tags)
     return await addTagsToPost(post.id, tagList)
   } catch (error) {
@@ -178,11 +171,13 @@ const createTags = async (tagList) => {
 const createPostTag = async (postId, tagId) => {
 
   try {
+    console.log('starting to create post tag...')
     await client.query(`
       INSERT INTO post_tags("post_id", "tag_id")
       VALUES ($1, $2)
       ON CONFLICT ("post_id", "tag_id") DO NOTHING
     `, [postId, tagId])
+    console.log('finished creating post tag!')
   } catch (error) {
     console.log('error creating post tag', error)
   }
@@ -191,12 +186,15 @@ const createPostTag = async (postId, tagId) => {
 const addTagsToPost = async (postId, tagList) => {
   if (!postId) return;
   if (tagList.length === 0) return;
+  console.log('starting adding tags to post...')
   try {
     const createPostTagPromises = tagList.map(tag => {
       createPostTag(postId, tag.id)
     })
+
     await Promise.all(createPostTagPromises)
-    return await getPostById(postId)
+    return await getPostsById(postId)
+
   } catch (error) {
     console.log('error adding tags to post', error)
   }
@@ -212,6 +210,7 @@ const updateUser = async (id, fields = {}) => {
   if (setString.length === 0) {
     return;
   }
+
   for (let key of keys) {
     if (!['username',
       'password',
@@ -220,6 +219,7 @@ const updateUser = async (id, fields = {}) => {
       'active'].includes(key))
       return;
   }
+
   try {
     const { rows: [user] } = await client.query(`
     UPDATE users
@@ -227,57 +227,32 @@ const updateUser = async (id, fields = {}) => {
     WHERE id = ${id}
     RETURNING *
     `, Object.values(fields))
+    console.log('finished updating user')
     return user
   } catch (error) {
     console.error('error updating user', error)
   }
 }
 
-const updatePost = async (postId, fields = {}) => {
-  // read off the tags & remove that field 
-  const { tags } = fields; // might be undefined
-  delete fields.tags;
+const updatePost = async (id, fields = {}) => {
+  const keys = Object.keys(fields)
+  const setString = keys.map((key, index) => {
+    return `"${key}" = $${index + 1}`
+  }).join(', ')
 
-  // build the set string
-  const setString = Object.keys(fields).map(
-    (key, index) => `"${key}"=$${index + 1}`
-  ).join(', ');
+  if (setString.length === 0) return;
+  for (let key of keys) {
+    if (!['authorId', 'title', 'content', 'active'].includes(key)) return;
+  }
 
   try {
-    // update any fields that need to be updated
-    if (setString.length > 0) {
-      await client.query(`
-         UPDATE posts
-         SET ${setString}
-         WHERE id=${postId}
-         RETURNING *;
-       `, Object.values(fields));
-    }
+    const { rows: [post] } = await client.query(`
+    UPDATE posts
+    SET ${setString}
+    RETURNING *
+    ;`, Object.values(fields))
 
-    // return early if there's no tags to update
-    if (tags === undefined) {
-      return await getPostById(postId);
-    }
-
-    // make any new tags that need to be made
-    const tagList = await createTags(tags);
-    const tagListIdString = tagList.map(
-      tag => `${tag.id}`
-    ).join(', ');
-
-    // delete any post_tags from the database which aren't in that tagList
-    await client.query(`
-       DELETE FROM post_tags
-       WHERE "tag_id"
-       NOT IN (${tagListIdString})
-       AND "post_id"=$1;
-     `, [postId]);
-
-    // and create post_tags as necessary
-    await addTagsToPost(postId, tagList);
-
-    return await getPostById(postId);
-
+    return post
   } catch (error) {
     console.error('error updating post', error)
   }
@@ -287,9 +262,9 @@ module.exports = {
   client,
   getAllUsers,
   getAllPosts,
+  getAllTags,
   getPostsByUser,
-  getPostById,
-  getPostsByTagName,
+  getPostsById,
   getUserById,
   createUser,
   createPost,

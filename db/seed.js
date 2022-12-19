@@ -2,6 +2,7 @@ const {
   client,
   getAllUsers,
   getAllPosts,
+  getAllTags,
   getPostsByUser,
   getPostById,
   getPostsByTagName,
@@ -12,7 +13,7 @@ const {
   createPostTag,
   updateUser,
   updatePost,
-  addTagsToPost
+  addTagsToPost,
 } = require('./index')
 
 
@@ -125,6 +126,8 @@ const testDB = async () => {
     console.log("starting database tests...");
     const users = await getAllUsers(); // DO NOT COMMENT OUT THESE ROWS
     const posts = await getAllPosts(); // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    const tags = await getAllTags();
+
 
 
     //// <-- UNCOMMENT TESTS 1 AT A TIME --> ////
