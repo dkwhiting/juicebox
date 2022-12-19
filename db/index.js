@@ -69,6 +69,20 @@ const getUserById = async (userId) => {
   }
 }
 
+async function getUserByUsername(username) {
+  try {
+    const { rows: [user] } = await client.query(`
+      SELECT *
+      FROM users
+      WHERE username=$1;
+    `, [username]);
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const getPostsById = async (postId) => {
   try {
     const { rows: [post] } = await client.query(`
@@ -266,6 +280,7 @@ module.exports = {
   getPostsByUser,
   getPostsById,
   getUserById,
+  getUserByUsername,
   createUser,
   createPost,
   createTags,

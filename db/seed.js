@@ -7,6 +7,7 @@ const {
   getPostById,
   getPostsByTagName,
   getUserById,
+  getUserByUsername,
   createUser,
   createPost,
   createTags,
@@ -72,8 +73,8 @@ const createTables = async () => {
 const createInitialUsers = async () => {
   try {
     console.log('starting to create users...')
-    const albert = await createUser({ username: 'albert', password: 'bertie99', name: 'Al bert', location: 'NYC' });
-    const sandra = await createUser({ username: 'sandra', password: '2sandy4me', name: 'Sandra', location: 'LA' });
+    const albert = await createUser({ username: 'jobin', password: 'bertie99', name: 'Sydney', location: 'NYC' });
+    const sandra = await createUser({ username: 'xXxPISTOL_PETExXx', password: 'sl@ppin-DA-ba$$', name: 'Peter', location: 'LA' });
     const glamgal = await createUser({ username: 'glamgal', password: 'soglam', name: 'Tanya', location: 'Sicily' });
     console.log('finished creating users!')
   } catch (error) {
@@ -128,6 +129,7 @@ const testDB = async () => {
     const posts = await getAllPosts(); // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     const tags = await getAllTags();
 
+    console.log(users)
 
 
     //// <-- UNCOMMENT TESTS 1 AT A TIME --> ////
