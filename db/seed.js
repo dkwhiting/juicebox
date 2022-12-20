@@ -141,6 +141,12 @@ const testDB = async () => {
     // console.log("Result:", postsByUser)
 
 
+    //// <-- Tests getPostByUser --> ////
+    // console.log("TESTING: Calling getPostById")
+    // const postsById = await getPostById(2)
+    // console.log("Result:", postsById)
+
+
 
     //// <-- Tests updateUser --> ////
 

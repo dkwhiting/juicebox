@@ -16,4 +16,8 @@ router.get('/', async (req, res) => {
   });
 });
 
+router.get('/:tagName/posts', async (req, res) => {
+  c
+})
+
 module.exports = (router)

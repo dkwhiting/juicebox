@@ -3,20 +3,19 @@ const PORT = 3000
 const express = require('express')
 const server = express()
 const apiRouter = require('./api')
-
 const morgan = require('morgan');
-server.use(morgan('dev'));
 
+server.use(morgan('dev'));
 server.use(express.json())
 
 
-server.use((req, res, next) => {
-  console.log("_____Body logger START_____")
-  console.log(req.body)
-  console.log("_____Body logger END_____")
+// server.use((req, res, next) => {
+//   console.log("_____Body logger START_____")
+//   console.log(req.body)
+//   console.log("_____Body logger END_____")
 
-  next();
-})
+//   next();
+// })
 
 server.use('/api', apiRouter)
 

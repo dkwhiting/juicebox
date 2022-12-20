@@ -11,13 +11,14 @@ router.use((req, res, next) => {
   next();
 });
 
+
 router.get('/', async (req, res) => {
   const users = await getAllUsers();
-
   res.send({
     users
   });
 });
+
 
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
@@ -75,6 +76,7 @@ router.post('/register', async (req, res, next) => {
     }, JWT_SECRET, {
       expiresIn: '1w'
     })
+
     res.send({ message: `${username} successfully registered`, token: token })
 
   } catch ({ name, message }) {
