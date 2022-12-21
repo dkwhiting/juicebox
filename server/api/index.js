@@ -31,7 +31,7 @@ apiRouter.use(async (req, res, next) => {
   }
 });
 
-apiRouter.use((req, res, next) => {
+apiRouter.use(cors({ origin: '*' }), (req, res, next) => {
   if (req.user) {
     console.log("User is set:", req.user);
   }
