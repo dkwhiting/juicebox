@@ -13,10 +13,12 @@ router.use((req, res, next) => {
 router.get('/', async (req, res) => {
   try {
     const allPosts = await getAllPosts();
+    console.log(allPosts)
 
     const posts = allPosts.filter(post => {
       return post.active || (req.user && post.author.id === req.user.id);
     });
+    res.send(posts)
 
   } catch ({ name, message }) {
     next({ name, message })
