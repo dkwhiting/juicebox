@@ -38,6 +38,7 @@ router.post('/login', async (req, res, next) => {
       res.send({ message: 'You are logged in!', token: userToken })
 
     } else {
+      res.send('Username or password is incorrect')
       next({
         name: 'IncorrectCredentialsError',
         message: 'Username or password is incorrect'
