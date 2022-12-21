@@ -1,0 +1,23 @@
+.all-posts {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  gap: 20px;
+}
+
+.post {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px black solid;
+  border-radius: 15px;
+}
+
+.post-header {
+  padding: 8px;
+  background-color: rgb(146, 205, 202);
+}
+
+.post-body {
+  padding: 8px;
+}

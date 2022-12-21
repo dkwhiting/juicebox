@@ -1,22 +1,36 @@
-import React, { useState } from 'react'
-import { loginUser } from '../api/auth'
+import React, { useEffect, useState } from "react";
+import { fetchPosts } from "../api/posts";
 
-const Posts = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+const Posts = ({ token, allPosts, setAllPosts, refresh, setRefresh }) => {
 
-  const submitHandler = async (event) => {
-    event.preventDefault()
-    await loginUser(username, password)
-  }
+
+  useEffect(() => {
+    const getPosts = async () => {
+      const posts = await fetchPosts()
+      setAllPosts(posts)
+    }
+    getPosts();
+    console.log('THIS IS ALLPOSTS', allPosts)
+  }, [token, refresh])
 
   return (
-    <div>
-      <form onSubmit={(event) => submitHandler(event)}>
-        <input value={username} type="text" placeholder="username" onChange={(event) => setUsername(event.target.value)}></input>
-        <input value={password} type="password" placeholder="password" onChange={(event) => setPassword(event.target.value)}></input>
-        <button type="submit">Submit</button>
-      </form>
+    <div className="all-posts">
+
+      {
+        allPosts.map(((post) => {
+          return (
+            <div className="post" key={post.id}>
+              <div className="post-header">
+                <div>{post.author.username}</div>
+                <div>{post.title}</div>
+              </div>
+              <div className="post-body">{post.content}</div>
+
+            </div>
+          )
+        }))
+      }
+
     </div>
   )
 }

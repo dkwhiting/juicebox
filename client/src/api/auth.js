@@ -1,21 +1,31 @@
-const PORT = 'http://localhost:8080/api'
+const API_URL = process.env.REACT_APP_API_URL
 
 export const loginUser = async (username, password) => {
   try {
-    const response = await fetch(`${PORT}/users/login`, {
+    const response = await fetch(`${API_URL}/users/login`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        user: {
-          username,
-          password
-        }
+
+        username,
+        password
+
       })
     })
     const data = await response.json();
-    console.log(data)
+    return data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+export const getPosts = async () => {
+  try {
+    const response = await fetch(`${API_URL}/posts`)
+    const data = await response.json();
     return data
   } catch (error) {
     console.log(error)
