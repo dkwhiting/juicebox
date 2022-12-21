@@ -1,9 +1,9 @@
 // const API_URL = 'http://localhost:3001/api' // Development
-const API_URL = process.env.API_URL // Production
+const API_URL = process.env.REACT_APP_API_URL // Production
 
 export const loginUser = async (username, password) => {
   try {
-    const response = await fetch(`${process.env.API_URL}/users/login`, {
+    const response = await fetch(`${API_URL}/users/login`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -25,7 +25,7 @@ export const loginUser = async (username, password) => {
 
 export const getPosts = async () => {
   try {
-    const response = await fetch(`${process.env.API_URL}/posts`)
+    const response = await fetch(`${API_URL}/posts`)
     const data = await response.json();
     return data
   } catch (error) {
