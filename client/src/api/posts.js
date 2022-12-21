@@ -1,4 +1,5 @@
-const API_URL = process.env.REACT_APP_API_URL
+// const API_URL = 'http://localhost:3001/api' // Development
+const API_URL = process.env.API_URL // Production
 
 export const fetchPosts = async () => {
   try {
