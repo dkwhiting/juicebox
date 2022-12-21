@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const { getAllUsers, getUserByUsername, createUser } = require('../db');
+const { requireUser } = require('./utils')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = process.env
 
@@ -83,6 +84,19 @@ router.post('/register', async (req, res, next) => {
   } catch ({ name, message }) {
 
     next({ name, message });
+  }
+})
+
+router.get('/:username/account', requireUser, async (req, res) => {
+  const username = req.params
+  const currentUser = req.body
+  if (username === req.user.username) {
+    res.send(req.user.username)
+  } else {
+    next({
+      name: "InvalidUser",
+      message: "Cannot view info that does not belong to you"
+    })
   }
 })
 
