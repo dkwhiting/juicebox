@@ -11,7 +11,6 @@ const Login = ({ token, setToken }) => {
     const data = await loginUser(username, password)
     setToken(data.token)
     localStorage.setItem('token', data.token)
-    console.log(data)
   }
 
   return (

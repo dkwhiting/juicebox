@@ -24,7 +24,6 @@ function App() {
 
   return (
     <div>
-      <button onClick={() => console.log(token)}>log</button>
       {!token
         ? <Login token={token} setToken={setToken} />
         : <><button onClick={() => {
