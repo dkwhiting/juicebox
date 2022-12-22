@@ -1,6 +1,6 @@
 // const API_URL = 'http://localhost:3001/api' // Development
 // const API_URL = process.env.REACT_APP_API_URL // Production
-const API_URL = 'https://juicebox-zhdp.onrender.com/api' // Production (Temporary Fix)
+const API_URL = RENDER_EXTERNAL_URL // Production (Temporary Fix)
 
 export const loginUser = async (username, password) => {
   try {
