@@ -21,3 +21,19 @@
 .post-body {
   padding: 8px;
 }
+
+#new-post {
+  background-color: lightgrey;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  align-items: stretch;
+  border-radius: 15px;
+}
+
+#new-post textarea {
+  resize: none;
+  font-family: inherit;
+}

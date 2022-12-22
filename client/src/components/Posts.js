@@ -10,7 +10,6 @@ const Posts = ({ token, allPosts, setAllPosts, refresh, setRefresh }) => {
       setAllPosts(posts)
     }
     getPosts();
-    console.log('THIS IS ALLPOSTS', allPosts)
   }, [token, refresh])
 
   return (

@@ -1,6 +1,6 @@
 const { Client } = require('pg');
-// const client = new Client(process.env.LOCAL_DATABASE_URL) //Development URL
-const client = new Client(process.env.DATABASE_URL) //Production URL
+const client = new Client(process.env.LOCAL_DATABASE_URL) //Development URL
+// const client = new Client(process.env.DATABASE_URL) //Production URL
 
 const getAllUsers = async () => {
   try {

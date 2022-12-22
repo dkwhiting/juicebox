@@ -10,7 +10,7 @@ const Login = ({ token, setToken }) => {
     event.preventDefault()
     const data = await loginUser(username, password)
     setToken(data.token)
-    localStorage.setItem('token', token)
+    localStorage.setItem('token', data.token)
     console.log(data)
   }
 

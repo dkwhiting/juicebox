@@ -9,13 +9,13 @@ server.use(morgan('dev'));
 server.use(express.json())
 
 
-// server.use((req, res, next) => {
-//   console.log("_____Body logger START_____")
-//   console.log(req.body)
-//   console.log("_____Body logger END_____")
+server.use((req, res, next) => {
+  console.log("_____Body logger START_____")
+  console.log(req.body)
+  console.log("_____Body logger END_____")
 
-//   next();
-// })
+  next();
+})
 
 server.use('/api', apiRouter)
 

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const { getAllUsers, getUserByUsername, createUser } = require('../db');
+const { getAllUsers, getUserByUsername, createUser, getUserById } = require('../db');
 const { requireUser } = require('./utils')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = process.env
@@ -87,17 +87,22 @@ router.post('/register', async (req, res, next) => {
   }
 })
 
-router.get('/:username/account', requireUser, async (req, res) => {
-  const username = req.params
-  const currentUser = req.body
-  if (username === req.user.username) {
-    res.send(req.user.username)
-  } else {
-    next({
-      name: "InvalidUser",
-      message: "Cannot view info that does not belong to you"
-    })
+router.get('/me', requireUser, async (req, res, next) => {
+  const { id } = req.user
+  try {
+    const user = await getUserById(id)
+    res.send(user)
+  } catch ({ name, message }) {
+    next({ name, message })
   }
 })
+
+// Error handler
+router.use((error, req, res, next) => {
+  res.send({
+    name: error.name,
+    message: error.message
+  });
+});
 
 module.exports = router
